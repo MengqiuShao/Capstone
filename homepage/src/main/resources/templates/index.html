@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        .weather, .recommendations, .banner {
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .weather {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+        }
+
+        .weather h1, .weather h2 {
+            margin: 0;
+        }
+
+        .weather h2 {
+            margin-top: 10px;
+            font-size: 24px;
+        }
+
+        .details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .details div {
+            text-align: center;
+        }
+
+        .recommendations h2, .recommendations p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .recommendations h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .recommendations p {
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .card img {
+            max-width: 100%;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .card-content {
+            padding: 10px 0;
+        }
+
+        .banner img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        .banner p {
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="weather">
+        <h1 id="city-name">City Name</h1>
+        <h2 id="temperature">Temperature</h2>
+        <div class="details">
+            <div>
+                <p>Feels like</p>
+                <p id="feels-like">Feels like</p>
+            </div>
+            <div>
+                <p>Wind speed</p>
+                <p id="wind-speed">Wind speed</p>
+            </div>
+            <div>
+                <p>Humidity</p>
+                <p id="humidity">Humidity</p>
+            </div>
+            <div>
+                <p>Sunrise</p>
+                <p id="sunrise">Sunrise</p>
+            </div>
+            <div>
+                <p>Sunset</p>
+                <p id="sunset">Sunset</p>
+            </div>
+        </div>
+    </div>
+    <div class="recommendations">
+        <h2>Today's Recommendation</h2>
+        <p id="recommendation-text">The weather is great today with high visibility. Highly recommend the following 5 hiking spots</p>
+        <div id="location-cards">
+
+        </div>
+    </div>
+    <div class="banner" id="indoor-banner" style="display: none;">
+        <img id="banner-img" src="WechatIMG13463.jpg" alt="Indoor Activities">
+        <p>It's a good day to try some indoor activities!</p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Fetch weather data
+        fetch("/weather?city=Vancouver")
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("city-name").innerText = data.city;
+                document.getElementById("temperature").innerText = `${data.temperature}°C ${data.weather_condition}`;
+                document.getElementById("feels-like").innerText = `${data.feels_like}°C`;
+                document.getElementById("wind-speed").innerText = `${data.wind_speed} m/s`;
+                document.getElementById("humidity").innerText = `${data.humidity}%`;
+                document.getElementById("sunrise").innerText = new Date(data.sunrise * 1000).toLocaleTimeString();
+                document.getElementById("sunset").innerText = new Date(data.sunset * 1000).toLocaleTimeString();
+
+                // Fetch recommendation data
+                fetch("/recommendation?city=" + data.city)
+                    .then(response => response.json())
+                    .then(recData => {
+                        document.getElementById("recommendation-text").innerText = recData.advice;
+                        if (recData.showHikingList) {
+                            const container = document.getElementById("location-cards");
+                            container.innerHTML = "";
+                            recData.fields.forEach(location => {
+                                const card = document.createElement("div");
+                                card.className = "card";
+                                card.innerHTML = `
+                                    <img src="${location.imageUrl}" alt="${location.name}">
+                                    <div class="card-content">
+                                        <h3>${location.name}</h3>
+                                        <p>${location.location}</p>
+                                        <p>Rating: ${location.rating}</p>
+                                        <p>Difficulty: ${location.difficulty}</p>
+                                        <p>Distance: ${location.distance} km</p>
+                                        <p>Estimated Time: ${location.estimatedTime}</p>
+                                    </div>
+                                `;
+                                container.appendChild(card);
+                            });
+                        } else {
+                            document.getElementById("indoor-banner").style.display = "block";
+                            document.getElementById("banner-img").src = recData.bannerImageUrl;
+                        }
+                    })
+                    .catch(error => console.error('Error fetching recommendation:', error));
+            })
+            .catch(error => console.error('Error fetching weather data:', error));
+    });
+</script>
+</body>
+</html>

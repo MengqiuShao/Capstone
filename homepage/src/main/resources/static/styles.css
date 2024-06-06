@@ -1,0 +1,54 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+.weather-container {
+    background-color: #ffffff;
+    padding: 20px;
+    margin: 20px auto;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+}
+
+.weather-header {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.weather-info {
+    font-size: 18px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.recommendation {
+    font-size: 20px;
+    margin-top: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.hiking-spot {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border-left: 5px solid #4CAF50;
+}
+
+.hiking-spot .name {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.hiking-spot .details {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
